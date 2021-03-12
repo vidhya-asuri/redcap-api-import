@@ -11,7 +11,7 @@ $spreadsheet = new Spreadsheet();
 $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv($spreadsheet);
 $reader->setLoadSheetsOnly(["Test"]);
 $reader->setReadDataOnly(true);
-$inputFileName = 'cohort.csv';
+$inputFileName = 'demographics.csv';
 $worksheetData = $reader->listWorksheetInfo($inputFileName);
 
 $spreadsheet = $reader->load($inputFileName);
@@ -42,7 +42,7 @@ for ($row = 2; $row < $worksheetData[0]['totalRows']; $row++)
 // print_r($variables);
 
 
-$data = [];
+$single_record = [];
 $i = 0;
 $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 $formData = []; $formDataCount = 0; // The formData array will hold the data to be imported.
@@ -64,9 +64,8 @@ $variableNames = array_keys($variables);
 
 // The for($count) ... loop creates 100 records with randomly generated data for all the variables.
 $record_id = 1;
-for($count = 0; $count < 100; $count++){
+for($count = 0; $count < 10; $count++){
     // Loop through the variableNames array and read the variable names
-   
  foreach ($variableNames as $varName)
  {
      // If the variable name is patkey, then start with the preset value(above)
@@ -92,13 +91,45 @@ for($count = 0; $count < 100; $count++){
      {
          $varValue  = 1; // ; // Could toggle randomly between 1 and 0.
      }
-     $data[$varName] = $varValue;
+     $single_record[$varName] = $varValue;
      $i++;
  }
  
- $formData[$formDataCount][] = $data;
+ $formData[$formDataCount][] = $single_record;
+ 
+ $data = array(
+     'token' => '02F9958D98B1FA0995C92310E4318089',
+     'content' => 'record',
+     'format' => 'json',
+     'type' => 'flat',
+     'overwriteBehavior' => 'normal',
+     'forceAutoNumber' => 'false',
+     'data' => '',
+     'returnContent' => 'count',
+     'returnFormat' => 'json'
+ );
+ $data['data'] = json_encode($formData[$formDataCount]); 
+ 
+ $ch = curl_init();
+ curl_setopt($ch, CURLOPT_URL, 'https://redcap.uky.edu/redcap/api/');
+ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+ curl_setopt($ch, CURLOPT_VERBOSE, 0);
+ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+ curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+ curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+ curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+ curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
+ $output = curl_exec($ch);
+ print $output;
+ curl_close($ch);
+ 
+ 
  $formDataCount++;
 }
+
+return;
 
 // echo "formData[0] :: ";
 
