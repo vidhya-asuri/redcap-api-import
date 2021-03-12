@@ -16,9 +16,6 @@ $worksheetData = $reader->listWorksheetInfo($inputFileName);
 
 $spreadsheet = $reader->load($inputFileName);
 $worksheetData = $reader->listWorksheetInfo($inputFileName);
-// echo "<br>";
-// print_r($worksheetData);
-// echo "<br>";
 
 $headers = [];
 
@@ -39,9 +36,6 @@ for ($row = 2; $row < $worksheetData[0]['totalRows']; $row++)
     $i++;
 }
 
-// print_r($variables);
-
-
 $single_record = [];
 $i = 0;
 $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -56,18 +50,14 @@ array(1) { [0]=> array(5) { ["record_id"]=> int(1) ["mrn"]=> string(20) "ZOM7WWu
 
 $patkey = 456; $varValue = ""; // The value generated for the variable
 $variableNames = array_keys($variables);
-// echo "<br>";
-// echo "Variable names: ";
-// echo "<br>";
-// var_dump($variableNames);
-// echo "<br>";
 
 // The for($count) ... loop creates 100 records with randomly generated data for all the variables.
 $record_id = 1;
-for($count = 0; $count < 10; $count++){
+for($count = 0; $count < 10; $count++)
+{
     // Loop through the variableNames array and read the variable names
- foreach ($variableNames as $varName)
- {
+    foreach ($variableNames as $varName)
+    {
      // If the variable name is patkey, then start with the preset value(above)
      // and increment it for the next record.
      if(strcmp($varName,'patkey') == 0)
@@ -93,11 +83,11 @@ for($count = 0; $count < 10; $count++){
      }
      $single_record[$varName] = $varValue;
      $i++;
- }
+    }
+
+    $formData[$formDataCount][] = $single_record;
  
- $formData[$formDataCount][] = $single_record;
- 
- $data = array(
+    $data = array(
      'token' => '02F9958D98B1FA0995C92310E4318089',
      'content' => 'record',
      'format' => 'json',
@@ -107,99 +97,9 @@ for($count = 0; $count < 10; $count++){
      'data' => '',
      'returnContent' => 'count',
      'returnFormat' => 'json'
- );
- $data['data'] = json_encode($formData[$formDataCount]); 
- 
- $ch = curl_init();
- curl_setopt($ch, CURLOPT_URL, 'https://redcap.uky.edu/redcap/api/');
- curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
- curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
- curl_setopt($ch, CURLOPT_VERBOSE, 0);
- curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
- curl_setopt($ch, CURLOPT_AUTOREFERER, true);
- curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
- curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
- curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
- curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
- $output = curl_exec($ch);
- print $output;
- curl_close($ch);
- 
- 
- $formDataCount++;
-}
-
-return;
-
-// echo "formData[0] :: ";
-
-// var_dump($formData[0]);
-// echo "<br>";echo "<br>";
-
-$data = array(
-    'token' => '02F9958D98B1FA0995C92310E4318089',
-    'content' => 'record',
-    'format' => 'json',
-    'type' => 'flat',
-    'overwriteBehavior' => 'normal',
-    'forceAutoNumber' => 'false',
-    'data' => '',
-    'returnContent' => 'count',
-    'returnFormat' => 'json'
-);
-$data['data'] = json_encode($formData[0]);
-
-echo "\$data :: ";
-var_dump($data);
-echo "<br>";echo "<br>";
-
-$rec_data['record_id'] = 777;
-$rec_data['fname'] = "Vidhya777";
-$rec_data['lname'] = "Asuri777";
-
-$my_record1[] = $rec_data;  // array('{"record_id" : 666,"fname" : "Vidhya","lname" : "Asuri"}');
-
-echo "<br>" . "my_record1" . "<br>";
-var_dump($my_record1);
-echo "<br>";echo "<br>";
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://redcap.uky.edu/redcap/api/');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_VERBOSE, 0);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
-$output = curl_exec($ch);
-print $output;
-curl_close($ch);
-
-return;
-
-
-echo "<br>";
-echo "<br>";
-foreach ($formData as $data){
-    print_r($data);
-    echo "<br>";
-    
-    $data = array(
-        'token' => '02F9958D98B1FA0995C92310E4318089',
-        'content' => 'record',
-        'format' => 'json',
-        'type' => 'flat',
-        'overwriteBehavior' => 'normal',
-        'forceAutoNumber' => 'false',
-        'data' => '',
-        'returnContent' => 'count',
-        'returnFormat' => 'json'
     );
-    $data['data'] = json_encode($data);
-    
+    $data['data'] = json_encode($formData[$formDataCount]); 
+ 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'https://redcap.uky.edu/redcap/api/');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -214,17 +114,10 @@ foreach ($formData as $data){
     $output = curl_exec($ch);
     print $output;
     curl_close($ch);
-    
+ 
+ 
+    $formDataCount++;
 }
-echo "<br>";
-
-echo count($formData);
-echo "<br>";
-echo "<br>";
-
-
-
-
 
 
 // Generate random string to fill in text values
